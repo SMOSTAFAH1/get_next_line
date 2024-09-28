@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+
 char	*get_next_line(int fd);
 char	*substr_tweaked(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin_tweaked(char const *s1, char const *s2);
