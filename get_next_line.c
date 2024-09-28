@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024-09-28 12:11:36 by shashemi          #+#    #+#             */
 /*   Updated: 2024-09-28 12:11:36 by shashemi         ###   ########.fr       */
@@ -13,11 +13,8 @@
 
 static char	*free_holded(char **in_hold)
 {
-	if (*in_hold)
-	{
-		free(*in_hold);
-		*in_hold = NULL;
-	}
+	free(*in_hold);
+	*in_hold = NULL;
 	return (NULL);
 }
 
@@ -47,10 +44,12 @@ static char	*extract_line(char *in_hold)
 	if (!aux)
 	{
 		res = ft_strdup(in_hold);
+		free(in_hold);
 		return (res);
 	}
 	offset = aux - in_hold + 1;
 	res = substr_tweaked(in_hold, 0, offset);
+	free(in_hold);
 	return (res);
 }
 

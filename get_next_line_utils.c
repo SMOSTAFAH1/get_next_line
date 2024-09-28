@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024-09-28 12:11:33 by shashemi          #+#    #+#             */
 /*   Updated: 2024-09-28 12:11:33 by shashemi         ###   ########.fr       */
