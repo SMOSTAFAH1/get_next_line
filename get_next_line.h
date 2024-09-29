@@ -29,7 +29,7 @@ typedef struct s_print
 
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 char	*ft_strchr(const char *s, int c);
-int		ft_strlen(const char *s);
+size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	ft_cut_tp(t_print *tp, int len_trim);
 

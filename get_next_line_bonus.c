@@ -13,21 +13,14 @@
 
 void	*ft_calloc(size_t count, size_t size)
 {
-	void	*puntero;
-	char	*ch;
-	size_t	i;
+	void	*result;
 
-	puntero = malloc(count * size);
-	if (!puntero)
+	result = malloc(count * size);
+	if (!result)
 		return (NULL);
-	ch = puntero;
-	i = 0;
-	while (i < (count * size))
-	{
-		ch[i] = '\0';
-		i++;
-	}
-	return (puntero);
+	else
+		ft_bzero(result, (count * size));
+	return (result);
 }
 
 void	ft_tp_line_ex(t_print *tp, char **line, int len_tp, char *str)
@@ -96,7 +89,7 @@ int	ft_buffer(int fd, t_print *tp, char **line)
 		ft_buffer(fd, tp, &(*line));
 	return (1);
 }
-// define OPEN_MAX        10240   /* max open files per process - sys/syslimits.h
+
 char	*get_next_line(int fd)
 {
 	static t_print	*tp[10240];
