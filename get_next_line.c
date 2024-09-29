@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024-09-29 13:06:15 by shashemi          #+#    #+#             */
 /*   Updated: 2024-09-29 13:06:15 by shashemi         ###   ########.fr       */
@@ -64,6 +64,8 @@ int	ft_tp_line(t_print *tp, char **line)
 	len_tp = str - tp->content + 1;
 	if (str && !*line)
 	{
+		if (len_tp == 1 && tp->content[0] == '\n')
+			return (0);
 		str = (char *)ft_calloc(len_tp, sizeof(str));
 		ft_memcpy(str, tp->content, len_tp);
 		ft_cut_tp(tp, len_tp);

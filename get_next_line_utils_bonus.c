@@ -73,20 +73,22 @@ void	ft_cut_tp(t_print *tp, int len_trim)
 {
 	char	*str;
 	int		len_tp;
+	int		i;
 
+	if (!tp || !*tp->content)
+		return ;
 	len_tp = ft_strlen(tp->content);
-	str = ft_strjoin(tp->content, "");
-	while (len_tp >= 0)
+	if (len_tp <= len_trim)
 	{
-		tp->content[len_tp] = '\0';
-		len_tp--;
+		tp->content[0] = '\0';
+		return ;
 	}
-	len_tp = 0;
-	while (str[len_trim] != '\0')
-	{
-		tp->content[len_tp] = str[len_trim];
-		len_trim++;
-		len_tp++;
-	}
+	str = ft_strjoin(tp->content + len_trim, "");
+	if (!str)
+		return ;
+	i = 0;
+	while (i < BUFFER_SIZE)
+		tp->content[i++] = '\0';
+	ft_memcpy(tp->content, str, ft_strlen(str));
 	free(str);
 }

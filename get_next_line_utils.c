@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024-09-29 13:07:51 by shashemi          #+#    #+#             */
 /*   Updated: 2024-09-29 13:07:51 by shashemi         ###   ########.fr       */
@@ -20,6 +20,8 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 		return (NULL);
 	while (i < n)
 	{
+		if (!src || !dst)
+			return (NULL);
 		*(char *)(dst + i) = *(char *)(src + i);
 		i++;
 	}
@@ -31,6 +33,8 @@ char	*ft_strchr(const char *s, int c)
 	int		i;
 
 	i = 0;
+	if (!s)
+		return (NULL);
 	while (*(s + i))
 	{
 		if (*(s + i) == (char)c)
@@ -47,6 +51,8 @@ size_t	ft_strlen(const char *s)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return (0);
 	while (s[i])
 		i++;
 	return (i);
@@ -58,6 +64,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	len_s1;
 	size_t	len_s2;
 
+	if (!s1 || !s2)
+		return (NULL);
 	len_s1 = ft_strlen(s1);
 	len_s2 = ft_strlen(s2);
 	res = (char *)malloc((len_s1 + len_s2 + 1) * sizeof(*res));
@@ -73,20 +81,22 @@ void	ft_cut_tp(t_print *tp, int len_trim)
 {
 	char	*str;
 	int		len_tp;
+	int		i;
 
+	if (!tp || !*tp->content)
+		return ;
 	len_tp = ft_strlen(tp->content);
-	str = ft_strjoin(tp->content, "");
-	while (len_tp >= 0)
+	if (len_tp <= len_trim)
 	{
-		tp->content[len_tp] = '\0';
-		len_tp--;
+		tp->content[0] = '\0';
+		return ;
 	}
-	len_tp = 0;
-	while (str[len_trim] != '\0')
-	{
-		tp->content[len_tp] = str[len_trim];
-		len_trim++;
-		len_tp++;
-	}
+	str = ft_strjoin(tp->content + len_trim, "");
+	if (!str)
+		return ;
+	i = 0;
+	while (i < BUFFER_SIZE)
+		tp->content[i++] = '\0';
+	ft_memcpy(tp->content, str, ft_strlen(str));
 	free(str);
 }
