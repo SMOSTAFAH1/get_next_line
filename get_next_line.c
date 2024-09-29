@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024-09-28 12:11:36 by shashemi          #+#    #+#             */
-/*   Updated: 2024-09-28 12:11:36 by shashemi         ###   ########.fr       */
+/*   Created: 2024-09-29 13:06:15 by shashemi          #+#    #+#             */
+/*   Updated: 2024-09-29 13:06:15 by shashemi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -115,10 +115,7 @@ char	*get_next_line(int fd)
 	else if ((!line && !((*tp)).size_buf) || (*tp).size_buf < 0)
 	{
 		if (tp)
-		{
-			free(tp->content);
 			free(tp);
-		}
 		tp = (NULL);
 		return (NULL);
 	}

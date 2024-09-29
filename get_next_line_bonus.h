@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024-09-28 13:22:09 by shashemi          #+#    #+#             */
-/*   Updated: 2024-09-28 13:22:09 by shashemi         ###   ########.fr       */
+/*   Created: 2024-09-29 13:07:22 by shashemi          #+#    #+#             */
+/*   Updated: 2024-09-29 13:07:22 by shashemi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_BONUS_H
@@ -29,7 +29,7 @@ typedef struct s_print
 
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 char	*ft_strchr(const char *s, int c);
-size_t	ft_strlen(const char *s);
+int		ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	ft_cut_tp(t_print *tp, int len_trim);
 
