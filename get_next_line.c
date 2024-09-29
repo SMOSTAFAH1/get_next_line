@@ -11,92 +11,113 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-static char	*free_holded(char **in_hold)
+void	*ft_calloc(size_t count, size_t size)
 {
-	free(*in_hold);
-	*in_hold = NULL;
-	return (NULL);
-}
+	void	*puntero;
+	char	*ch;
+	size_t	i;
 
-static char	*update_holded(char **in_hold)
-{
-	char	*aux;
-	char	*new_hold;
-	int		offset;
-
-	aux = ft_strchr_nwln(*in_hold);
-	if (!aux)
-		return (free_holded(in_hold));
-	offset = aux - *in_hold + 1;
-	new_hold = substr_tweaked(*in_hold, offset, ft_strlen(*in_hold) - offset);
-	free_holded(in_hold);
-	*in_hold = new_hold;
-	return (*in_hold);
-}
-
-static char	*extract_line(char *in_hold)
-{
-	char	*res;
-	char	*aux;
-	int		offset;
-
-	aux = ft_strchr_nwln(in_hold);
-	if (!aux)
+	puntero = malloc(count * size);
+	if (!puntero)
+		return (NULL);
+	ch = puntero;
+	i = 0;
+	while (i < (count * size))
 	{
-		res = ft_strdup(in_hold);
-		free(in_hold);
-		return (res);
+		ch[i] = '\0';
+		i++;
 	}
-	offset = aux - in_hold + 1;
-	res = substr_tweaked(in_hold, 0, offset);
-	free(in_hold);
-	return (res);
+	return (puntero);
 }
 
-static int	read_file(char **in_hold, int fd)
+void	ft_tp_line_ex(t_print *tp, char **line, int len_tp, char *str)
 {
-	char	*buffer;
-	int		flag;
+	char	*tmp_tp;
 
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
+	if (str && *line)
+	{
+		tmp_tp = (char *)ft_calloc(len_tp, sizeof(tmp_tp));
+		ft_memcpy(tmp_tp, tp->content, len_tp);
+		str = ft_strjoin(*line, "");
+		free(*line);
+		*line = ft_strjoin(str, tmp_tp);
+		free(tmp_tp);
+		free(str);
+	}
+	else
+	{
+		len_tp = ft_strlen(tp->content);
+		str = ft_strjoin(*line, "");
+		free(*line);
+		*line = ft_strjoin(str, tp->content);
+		free(str);
+	}
+	ft_cut_tp(tp, len_tp);
+}
+
+int	ft_tp_line(t_print *tp, char **line)
+{
+	char	*str;
+	int		len_tp;
+
+	str = ft_strchr(tp->content, '\n');
+	len_tp = str - tp->content + 1;
+	if (str && !*line)
+	{
+		str = (char *)ft_calloc(len_tp, sizeof(str));
+		ft_memcpy(str, tp->content, len_tp);
+		ft_cut_tp(tp, len_tp);
+		*line = str;
+	}
+	else if (str && *line)
+		ft_tp_line_ex(tp, &(*line), len_tp, str);
+	else if (*tp->content && *line != NULL)
+		ft_tp_line_ex(tp, &(*line), len_tp, str);
+	else
+	{
+		len_tp = ft_strlen(tp->content);
+		*line = ft_strjoin(tp->content, "");
+		ft_cut_tp(tp, len_tp);
+	}
+	return (1);
+}
+
+int	ft_buffer(int fd, t_print *tp, char **line)
+{
+	if (!*tp->content)
+		tp->size_buf = read(fd, tp->content, BUFFER_SIZE);
+	if (tp->size_buf < 0)
 		return (-1);
-	while (!ft_strchr_nwln(*in_hold))
-	{
-		flag = read(fd, buffer, BUFFER_SIZE);
-		if (flag <= 0)
-			break ;
-		buffer[flag] = '\0';
-		*in_hold = ft_strjoin_tweaked(*in_hold, buffer);
-		if (!*in_hold)
-		{
-			free(buffer);
-			return (-1);
-		}
-	}
-	free(buffer);
-	return (flag);
+	if (*tp->content)
+		ft_tp_line(tp, (&(*line)));
+	if ((!tp->size_buf && !*line) || (!*tp->content && !tp->size_buf && *line))
+		return (0);
+	else if (!ft_strchr(*line, '\n'))
+		ft_buffer(fd, tp, &(*line));
+	return (1);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*in_hold = NULL;
-	char		*res;
-	int			read_res;
+	static t_print	*tp;
+	char			*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	if (!in_hold || !ft_strchr_nwln(in_hold))
+	if (!tp)
+		tp = (t_print *)ft_calloc(sizeof(t_print), 1);
+	if (!tp)
+		return (NULL);
+	line = (NULL);
+	ft_buffer(fd, &(*tp), &line);
+	if (line)
+		return (line);
+	else if ((!line && !((*tp)).size_buf) || (*tp).size_buf < 0)
 	{
-		read_res = read_file(&in_hold, fd);
-		if (read_res < 0)
-			return (free_holded(&in_hold));
-	}
-	if (!in_hold)
+		if (tp)
+			free(tp);
+		tp = (NULL);
 		return (NULL);
-	res = extract_line(in_hold);
-	if (!res)
-		return (free_holded(&in_hold));
-	update_holded(&in_hold);
-	return (res);
+	}
+	return (line);
 }

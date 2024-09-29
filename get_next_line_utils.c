@@ -11,103 +11,85 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-char	*ft_strchr_nwln(const char *s)
+void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	if (!s)
-		return (NULL);
-	while (*s)
+	char	*de;
+	char	*sr;
+	size_t	i;
+
+	de = (char *)dest;
+	sr = (char *)src;
+	i = 0;
+	if (sr || de)
 	{
-		if (*s == '\n')
-			return ((char *)s);
-		s++;
+		while (i < n)
+		{
+			de[i] = sr[i];
+			i++;
+		}
+		return (de);
 	}
 	return (NULL);
 }
 
-size_t	ft_strlen(const char *s)
+char	*ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != (char)c && s[i] != '\0')
+		i++;
+	if (s[i] == (char)c)
+		return ((char *)(s + i));
+	return (NULL);
+}
+
+int	ft_strlen(const char *s)
 {
 	size_t	i;
 
-	if (!s)
-		return (0);
 	i = 0;
-	while (s[i])
+	while (s[i] != '\0')
 		i++;
 	return (i);
 }
 
-char	*ft_strjoin_tweaked(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	size_t	size;
 	char	*res;
-	size_t	i;
+	size_t	len_s1;
+	size_t	len_s2;
 
-	if (!s1 && !s2)
-		return (ft_strdup(""));
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	size = ft_strlen(s1) + ft_strlen(s2) + 1;
-	res = (char *)malloc(size * sizeof(char));
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	res = (char *)malloc((len_s1 + len_s2 + 1) * sizeof(*res));
 	if (!res)
-		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
-		res[i] = s1[i];
-		i++;
-	}
-	while (*s2)
-		res[i++] = *s2++;
-	res[i] = '\0';
+		return (0);
+	ft_memcpy(res, s1, len_s1);
+	ft_memcpy(res + len_s1, s2, len_s2);
+	res[len_s1 + len_s2] = '\0';
 	return (res);
 }
 
-char	*ft_strdup(const char *s1)
+// Corta los bits de content que ya han sido pasados a line
+void	ft_cut_tp(t_print *tp, int len_trim)
 {
-	char	*res;
-	size_t	len;
-	size_t	i;
+	char	*str;
+	int		len_tp;
 
-	if (!s1)
-		return (NULL);
-	len = ft_strlen(s1);
-	res = (char *)malloc((len + 1) * sizeof(char));
-	if (!res)
-		return (NULL);
-	i = 0;
-	while (i < len)
+	len_tp = ft_strlen(tp->content);
+	str = ft_strjoin(tp->content, "");
+	while (len_tp >= 0)
 	{
-		res[i] = s1[i];
-		++i;
+		tp->content[len_tp] = '\0';
+		len_tp--;
 	}
-	res[i] = '\0';
-	return (res);
-}
-
-char	*substr_tweaked(char const *s, unsigned int start, size_t len)
-{
-	char	*res;
-	size_t	slen;
-	size_t	i;
-
-	if (!s)
-		return (NULL);
-	slen = ft_strlen(s);
-	if (slen <= start)
-		return (ft_strdup(""));
-	if (slen - start < len)
-		len = slen - start;
-	res = (char *)malloc((len + 1) * sizeof(char));
-	if (!res)
-		return (NULL);
-	i = 0;
-	while (i < len && s[start + i])
+	len_tp = 0;
+	while (str[len_trim] != '\0')
 	{
-		res[i] = s[start + i];
-		i++;
+		tp->content[len_tp] = str[len_trim];
+		len_trim++;
+		len_tp++;
 	}
-	res[i] = '\0';
-	return (res);
+	free(str);
 }
