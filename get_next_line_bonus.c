@@ -13,14 +13,21 @@
 
 void	*ft_calloc(size_t count, size_t size)
 {
-	void	*result;
+	void	*puntero;
+	char	*ch;
+	size_t	i;
 
-	result = malloc(count * size);
-	if (!result)
+	puntero = malloc(count * size);
+	if (!puntero)
 		return (NULL);
-	else
-		ft_bzero(result, (count * size));
-	return (result);
+	ch = puntero;
+	i = 0;
+	while (i < (count * size))
+	{
+		ch[i] = '\0';
+		i++;
+	}
+	return (puntero);
 }
 
 void	ft_tp_line_ex(t_print *tp, char **line, int len_tp, char *str)
