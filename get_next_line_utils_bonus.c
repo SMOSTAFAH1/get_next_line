@@ -11,45 +11,43 @@
 /* ************************************************************************** */
 #include "get_next_line_bonus.h"
 
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	char	*de;
-	char	*sr;
 	size_t	i;
 
-	de = (char *)dest;
-	sr = (char *)src;
 	i = 0;
-	if (sr || de)
+	if (!dst && !src && n > 0)
+		return (NULL);
+	while (i < n)
 	{
-		while (i < n)
-		{
-			de[i] = sr[i];
-			i++;
-		}
-		return (de);
+		*(char *)(dst + i) = *(char *)(src + i);
+		i++;
 	}
-	return (NULL);
+	return (dst);
 }
 
 char	*ft_strchr(const char *s, int c)
 {
-	int	i;
+	int		i;
 
 	i = 0;
-	while (s[i] != (char)c && s[i] != '\0')
-		i++;
-	if (s[i] == (char)c)
-		return ((char *)(s + i));
+	while (*(s + i))
+	{
+		if (*(s + i) == (char)c)
+			return ((char *)s + i);
+		++i;
+	}
+	if ((char)c == '\0')
+		return ((char *)s + i);
 	return (NULL);
 }
 
-int	ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
 	i = 0;
-	while (s[i] != '\0')
+	while (s[i])
 		i++;
 	return (i);
 }
