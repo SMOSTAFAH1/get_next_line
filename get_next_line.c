@@ -115,7 +115,10 @@ char	*get_next_line(int fd)
 	else if ((!line && !((*tp)).size_buf) || (*tp).size_buf < 0)
 	{
 		if (tp)
+		{
+			free(tp->content);
 			free(tp);
+		}
 		tp = (NULL);
 		return (NULL);
 	}
