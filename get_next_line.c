@@ -26,15 +26,15 @@ char	*get_before_newline(const char *s)
 	int		i;
 
 	i = 0;
-	while (s[i] != '\0' && s[i] != '\n')
+	while (s[i] && s[i] != '\n')
 		i++;
-	if (s[i] != '\0' && s[i] == '\n')
+	if (s[i] && s[i] == '\n')
 		i++;
 	res = ft_calloc(i + 1, sizeof (*res));
 	if (!res)
-		return (NULL);
+		return (0);
 	i = 0;
-	while (s[i] != '\0' && s[i] != '\n')
+	while (s[i] && s[i] != '\n')
 	{
 		res[i] = s[i];
 		i++;
@@ -66,9 +66,9 @@ char	*get_after_newline(const char *s)
 	while (s && s[j])
 		j++;
 	i = 0;
-	while (s[i] != '\0' && s[i] != '\n')
+	while (s[i] && s[i] != '\n')
 		i++;
-	if (s[i] != '\0' && s[i] == '\n')
+	if (s[i] && s[i] == '\n')
 		i++;
 	res = ft_calloc((j - i) + 1, sizeof (*res));
 	if (!res)
@@ -163,16 +163,16 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+		return (0);
 	line = NULL;
 	tmp = NULL;
 	ft_read_line(fd, &keep, &tmp);
-	if (keep != NULL && *keep != '\0')
+	if (keep != NULL && *keep)
 		line = ft_parse_line(&keep, &tmp);
 	if (!line || *line == '\0')
 	{
 		ft_free_strs(&keep, &line, &tmp);
-		return (NULL);
+		return (0);
 	}
 	return (line);
 }

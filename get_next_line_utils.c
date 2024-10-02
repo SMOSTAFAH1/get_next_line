@@ -47,7 +47,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 
 	len = 0;
 	if (!s1 && !s2)
-		return (NULL);
+		return (0);
 	while (s1 && s1[len])
 		len++;
 	i = 0;
@@ -55,7 +55,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 		i++;
 	s = ft_calloc(len + i + 1, sizeof * s);
 	if (!s)
-		return (NULL);
+		return (0);
 	len = -1;
 	while (s1 && s1[++len])
 		s[len] = s1[len];
@@ -83,7 +83,7 @@ char	*ft_strdup(const char *s1)
 		i++;
 	s2 = ft_calloc(i + 1, sizeof * s2);
 	if (!s2)
-		return (NULL);
+		return (0);
 	i = 0;
 	while (s1[i])
 	{
