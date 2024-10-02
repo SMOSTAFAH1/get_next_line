@@ -5,120 +5,173 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024-09-29 13:06:15 by shashemi          #+#    #+#             */
-/*   Updated: 2024-09-29 13:06:15 by shashemi         ###   ########.fr       */
+/*   Created: 2024-10-01 10:44:46 by shashemi          #+#    #+#             */
+/*   Updated: 2024-10-01 10:44:46 by shashemi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-void	*ft_calloc(size_t count, size_t size)
+/**
+ * @brief Extrae y devuelve una nueva cadena que contiene los caracteres
+ *        de una cadena hasta el primer salto de línea ('\n') o el final
+ *        de la cadena (`\0`). Incluye el salto de línea si se encuentra.
+ *
+ * @param s La cadena de entrada desde la que se extraerá el contenido.
+ * @return Un puntero a una nueva cadena con el contenido antes del salto
+ *         de línea, o NULL si no se pudo reservar memoria.
+ */
+char	*get_before_newline(const char *s)
 {
-	void	*puntero;
-	char	*ch;
-	size_t	i;
+	char	*res;
+	int		i;
 
-	puntero = malloc(count * size);
-	if (!puntero)
-		return (NULL);
-	ch = puntero;
 	i = 0;
-	while (i < (count * size))
+	while (s[i] != '\0' && s[i] != '\n')
+		i++;
+	if (s[i] != '\0' && s[i] == '\n')
+		i++;
+	res = ft_calloc(i + 1, sizeof (*res));
+	if (!res)
+		return (NULL);
+	i = 0;
+	while (s[i] != '\0' && s[i] != '\n')
 	{
-		ch[i] = '\0';
+		res[i] = s[i];
 		i++;
 	}
-	return (puntero);
+	if (s[i] == '\n')
+	{
+		res[i] = s[i];
+		i++;
+	}
+	return (res);
 }
 
-void	ft_tp_line_ex(t_print *tp, char **line, int len_tp, char *str)
+/**
+ * @brief Devuelve una nueva cadena que contiene todos los caracteres
+ *        después del primer salto de línea ('\n') en una cadena dada.
+ *        Si no hay salto de línea, devuelve una cadena vacía.
+ *
+ * @param s La cadena de entrada desde la que se extraerá el contenido.
+ * @return Un puntero a una nueva cadena con el contenido después del salto
+ *         de línea, o NULL si no se pudo reservar memoria.
+ */
+char	*get_after_newline(const char *s)
 {
-	char	*tmp_tp;
+	char	*res;
+	int		i;
+	int		j;
 
-	if (str && *line)
+	j = 0;
+	while (s && s[j])
+		j++;
+	i = 0;
+	while (s[i] != '\0' && s[i] != '\n')
+		i++;
+	if (s[i] != '\0' && s[i] == '\n')
+		i++;
+	res = ft_calloc((j - i) + 1, sizeof (*res));
+	if (!res)
+		return (NULL);
+	j = 0;
+	while (s[i + j])
 	{
-		tmp_tp = (char *)ft_calloc(len_tp, sizeof(tmp_tp));
-		ft_memcpy(tmp_tp, tp->content, len_tp);
-		str = ft_strjoin(*line, "");
-		free(*line);
-		*line = ft_strjoin(str, tmp_tp);
-		free(tmp_tp);
-		free(str);
+		res[j] = s[i + j];
+		j++;
 	}
-	else
-	{
-		len_tp = ft_strlen(tp->content);
-		str = ft_strjoin(*line, "");
-		free(*line);
-		*line = ft_strjoin(str, tp->content);
-		free(str);
-	}
-	ft_cut_tp(tp, len_tp);
+	return (res);
 }
 
-int	ft_tp_line(t_print *tp, char **line)
+/**
+ * @brief Lee desde un archivo utilizando un buffer de tamaño `BUFFER_SIZE`
+ *        y concatena el contenido leído con el contenido ya guardado en
+ *        `keep`. La función sigue leyendo hasta encontrar un salto de línea
+ *        o el final del archivo.
+ *
+ * @param fd Descriptor de archivo desde el cual se leerá.
+ * @param keep Puntero al contenido acumulado estático.
+ * @param tmp Puntero temporal usado para manipular y liberar memoria.
+ * 
+ * @return Esta función no retorna ningún valor, pero actualiza `keep`
+ *         con el contenido leído del archivo.
+ */
+void	ft_read_line(int fd, char **keep, char **tmp)
 {
-	char	*str;
-	int		len_tp;
+	char	*buf;
+	int		r;
 
-	str = ft_strchr(tp->content, '\n');
-	len_tp = str - tp->content + 1;
-	if (str && !*line)
+	buf = malloc(sizeof (*buf) * (BUFFER_SIZE + 1));
+	if (!buf)
+		return ;
+	r = 1;
+	while (r > 0)
 	{
-		if (len_tp == 1 && tp->content[0] == '\n')
-			return (0);
-		str = (char *)ft_calloc(len_tp, sizeof(str));
-		ft_memcpy(str, tp->content, len_tp);
-		ft_cut_tp(tp, len_tp);
-		*line = str;
+		r = read(fd, buf, BUFFER_SIZE);
+		if (r == -1)
+		{
+			ft_free_strs(&buf, keep, tmp);
+			return ;
+		}
+		buf[r] = '\0';
+		*tmp = ft_strdup(*keep);
+		ft_free_strs(keep, 0, 0);
+		*keep = ft_strjoin(*tmp, buf);
+		ft_free_strs(tmp, 0, 0);
+		if (contains_newline(*keep))
+			break ;
 	}
-	else if (str && *line)
-		ft_tp_line_ex(tp, &(*line), len_tp, str);
-	else if (*tp->content && *line != NULL)
-		ft_tp_line_ex(tp, &(*line), len_tp, str);
-	else
-	{
-		len_tp = ft_strlen(tp->content);
-		*line = ft_strjoin(tp->content, "");
-		ft_cut_tp(tp, len_tp);
-	}
-	return (1);
+	ft_free_strs(&buf, 0, 0);
 }
 
-int	ft_buffer(int fd, t_print *tp, char **line)
+/**
+ * @brief Procesa el contenido acumulado en `keep`, separando una línea completa
+ *        (incluyendo el salto de línea, si está presente), y actualiza `keep`
+ *        con el contenido restante después del salto de línea.
+ *
+ * @param keep Puntero al contenido acumulado estático.
+ * @param tmp Puntero temporal usado para manipular y liberar memoria.
+ * @return Un puntero a la línea extraída desde `keep` (incluyendo el salto de
+ * 		   línea si existe) o NULL en caso de error.
+ */
+char	*ft_parse_line(char **keep, char **tmp)
 {
-	if (!*tp->content)
-		tp->size_buf = read(fd, tp->content, BUFFER_SIZE);
-	if (tp->size_buf < 0)
-		return (-1);
-	if (*tp->content)
-		ft_tp_line(tp, (&(*line)));
-	if ((!tp->size_buf && !*line) || (!*tp->content && !tp->size_buf && *line))
-		return (0);
-	else if (!ft_strchr(*line, '\n'))
-		ft_buffer(fd, tp, &(*line));
-	return (1);
+	char	*line;
+
+	*tmp = ft_strdup(*keep);
+	ft_free_strs(keep, 0, 0);
+	*keep = get_after_newline(*tmp);
+	line = get_before_newline(*tmp);
+	ft_free_strs(tmp, 0, 0);
+	return (line);
 }
 
+/**
+ * @brief Lee una línea de un archivo descrito por `fd`. Esta función lee
+ *        hasta que encuentra un salto de línea o el final del archivo.
+ *        Utiliza una variable estática `keep` para retener la información
+ *        entre llamadas sucesivas a la función.
+ *
+ * @param fd El descriptor de archivo desde el cual se leerá.
+ * @return Un puntero a la siguiente línea leída desde el archivo, o NULL
+ *         si hay un error, si se alcanza el final del archivo o si no
+ *         se pudo asignar memoria.
+ */
 char	*get_next_line(int fd)
 {
-	static t_print	*tp;
-	char			*line;
+	static char	*keep = NULL;
+	char		*tmp;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE < 1)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!tp)
-		tp = (t_print *)ft_calloc(sizeof(t_print), 1);
-	if (!tp)
-		return (NULL);
-	line = (NULL);
-	ft_buffer(fd, &(*tp), &line);
-	if (line)
-		return (line);
-	else if ((!line && !((*tp)).size_buf) || (*tp).size_buf < 0)
+	line = NULL;
+	tmp = NULL;
+	ft_read_line(fd, &keep, &tmp);
+	if (keep != NULL && *keep != '\0')
+		line = ft_parse_line(&keep, &tmp);
+	if (!line || *line == '\0')
 	{
-		if (tp)
-			free(tp);
-		tp = (NULL);
+		ft_free_strs(&keep, &line, &tmp);
 		return (NULL);
 	}
 	return (line);

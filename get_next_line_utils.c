@@ -3,100 +3,145 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shashemi <shashemi@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: shashemi <shashemi@student.42madrid.com>   #+#  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024-09-29 13:07:51 by shashemi          #+#    #+#             */
-/*   Updated: 2024-09-29 13:07:51 by shashemi         ###   ########.fr       */
+/*   Created: 2024-10-01 10:44:32 by shashemi          #+#    #+#             */
+/*   Updated: 2024-10-01 10:44:32 by shashemi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+/**
+ * Checks if a string contains a newline character.
+ * 
+ * @param s The string to check.
+ * @return 1 if the string contains a newline character, 0 otherwise.
+ */
+int	contains_newline(const char *s)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	if (!dst && !src && n > 0)
-		return (NULL);
-	while (i < n)
-	{
-		if (!src || !dst)
-			return (NULL);
-		*(char *)(dst + i) = *(char *)(src + i);
-		i++;
-	}
-	return (dst);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	int		i;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	while (*(s + i))
-	{
-		if (*(s + i) == (char)c)
-			return ((char *)s + i);
-		++i;
-	}
-	if ((char)c == '\0')
-		return ((char *)s + i);
-	return (NULL);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	if (!s)
-		return (0);
 	while (s[i])
+	{
+		if (s[i] == '\n')
+			return (1);
 		i++;
-	return (i);
+	}
+	return (0);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+/**
+ * Joins two strings into a new string.
+ * 
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @return A new string that is the concatenation of s1 and s2,
+ * or NULL if allocation fails.
+ */
+char	*ft_strjoin(const char *s1, const char *s2)
 {
-	char	*res;
-	size_t	len_s1;
-	size_t	len_s2;
-
-	if (!s1 || !s2)
-		return (NULL);
-	len_s1 = ft_strlen(s1);
-	len_s2 = ft_strlen(s2);
-	res = (char *)malloc((len_s1 + len_s2 + 1) * sizeof(*res));
-	if (!res)
-		return (0);
-	ft_memcpy(res, s1, len_s1);
-	ft_memcpy(res + len_s1, s2, len_s2);
-	res[len_s1 + len_s2] = '\0';
-	return (res);
-}
-
-void	ft_cut_tp(t_print *tp, int len_trim)
-{
-	char	*str;
-	int		len_tp;
+	char	*s;
+	int		len;
 	int		i;
 
-	if (!tp || !*tp->content)
-		return ;
-	len_tp = ft_strlen(tp->content);
-	if (len_tp <= len_trim)
-	{
-		tp->content[0] = '\0';
-		return ;
-	}
-	str = ft_strjoin(tp->content + len_trim, "");
-	if (!str)
-		return ;
+	len = 0;
+	if (!s1 && !s2)
+		return (NULL);
+	while (s1 && s1[len])
+		len++;
 	i = 0;
-	while (i < BUFFER_SIZE)
-		tp->content[i++] = '\0';
-	ft_memcpy(tp->content, str, ft_strlen(str));
-	free(str);
+	while (s2 && s2[i])
+		i++;
+	s = ft_calloc(len + i + 1, sizeof * s);
+	if (!s)
+		return (NULL);
+	len = -1;
+	while (s1 && s1[++len])
+		s[len] = s1[len];
+	i = -1;
+	while (s2 && s2[++i])
+		s[len + i] = s2[i];
+	return (s);
+}
+
+/**
+ * Duplicates a string.
+ * 
+ * @param s1 The string to duplicate.
+ * @return A new string that is a duplicate of s1, or NULL if allocation fails.
+ */
+char	*ft_strdup(const char *s1)
+{
+	char	*s2;
+	int		i;
+
+	if (!s1)
+		return (ft_strdup(""));
+	i = 0;
+	while (s1[i])
+		i++;
+	s2 = ft_calloc(i + 1, sizeof * s2);
+	if (!s2)
+		return (NULL);
+	i = 0;
+	while (s1[i])
+	{
+		s2[i] = s1[i];
+		i++;
+	}
+	return (s2);
+}
+
+/**
+ * Allocates memory and initializes it to zero.
+ * 
+ * @param count The number of elements to allocate.
+ * @param size The size of each element.
+ * @return A pointer to the allocated memory, or NULL if allocation fails.
+ */
+void	*ft_calloc(size_t count, size_t size)
+{
+	void			*r;
+	unsigned char	*p;
+	size_t			total;
+
+	total = count * size;
+	r = malloc(total);
+	if (!r)
+		return (NULL);
+	p = (unsigned char *)r;
+	while (total != 0)
+	{
+		*p = 0;
+		p++;
+		total--;
+	}
+	return (r);
+}
+
+/**
+ * Frees multiple strings and sets their pointers to NULL.
+ * 
+ * @param str The first string to free.
+ * @param str2 The second string to free.
+ * @param str3 The third string to free.
+ */
+void	ft_free_strs(char **str, char **str2, char **str3)
+{
+	if (str && *str)
+	{
+		free(*str);
+		*str = NULL;
+	}
+	if (str2 && *str2)
+	{
+		free(*str2);
+		*str2 = NULL;
+	}
+	if (str3 && *str3)
+	{
+		free(*str3);
+		*str3 = NULL;
+	}
 }
